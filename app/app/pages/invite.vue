@@ -100,7 +100,7 @@ function formatDate(ts: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen py-12 px-4">
+  <div class="min-h-dvh py-12 px-4">
     <div class="max-w-md mx-auto">
       <h1 class="text-2xl font-bold mb-6 text-center">
         Team invite

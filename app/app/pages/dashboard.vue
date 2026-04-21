@@ -16,7 +16,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center text-gray-500">
+  <div class="min-h-dvh flex items-center justify-center text-gray-500">
     Redirecting…
   </div>
 </template>

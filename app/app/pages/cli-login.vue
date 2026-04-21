@@ -73,7 +73,7 @@ function formatDate(ts: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen py-12 px-4">
+  <div class="min-h-dvh py-12 px-4">
     <div class="max-w-lg mx-auto">
       <h1 class="text-2xl font-bold mb-2 text-center">
         CLI login

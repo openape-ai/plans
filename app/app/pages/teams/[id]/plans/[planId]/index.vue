@@ -98,7 +98,7 @@ function statusColor(s: Plan['status']): 'neutral' | 'primary' | 'success' | 'wa
 </script>
 
 <template>
-  <div class="min-h-screen py-8 px-4 pb-24">
+  <div class="min-h-dvh py-8 px-4 pb-24">
     <div class="max-w-3xl mx-auto">
       <div class="flex items-center justify-between mb-4">
         <UButton :to="`/teams/${teamId}`" color="neutral" variant="ghost" icon="i-lucide-arrow-left" size="sm">
@@ -150,7 +150,7 @@ function statusColor(s: Plan['status']): 'neutral' | 'primary' | 'success' | 'wa
     </div>
 
     <!-- Edit FAB -->
-    <div v-if="plan && canEdit" class="fixed bottom-6 right-6 flex flex-col gap-2">
+    <div v-if="plan && canEdit" class="fixed bottom-safe right-6 flex flex-col gap-2">
       <UButton
         v-if="canDelete"
         color="error"

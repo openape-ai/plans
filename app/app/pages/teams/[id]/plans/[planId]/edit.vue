@@ -146,7 +146,7 @@ async function onSave() {
           />
         </div>
 
-        <div class="flex gap-2 pt-2 sticky bottom-0 bg-white dark:bg-gray-900 py-3 -mx-4 px-4 border-t border-gray-200 dark:border-gray-800">
+        <div class="flex gap-2 pt-2 sticky bottom-0 bg-white dark:bg-gray-900 py-3 pb-safe -mx-4 px-4 border-t border-gray-200 dark:border-gray-800">
           <UButton type="submit" color="primary" :loading="saving" :disabled="!title.trim() || saving">
             Save
           </UButton>

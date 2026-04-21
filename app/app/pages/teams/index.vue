@@ -54,7 +54,7 @@ function formatRelative(ts: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen py-8 px-4">
+  <div class="min-h-dvh py-8 px-4">
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-6">
         <div>

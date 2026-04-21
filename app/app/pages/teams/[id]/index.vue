@@ -196,7 +196,7 @@ function formatDate(ts: number): string {
 </script>
 
 <template>
-  <div class="min-h-screen py-8 px-4">
+  <div class="min-h-dvh py-8 px-4">
     <div class="max-w-4xl mx-auto">
       <div class="flex items-center justify-between mb-4">
         <UButton to="/teams" color="neutral" variant="ghost" icon="i-lucide-arrow-left" size="sm">

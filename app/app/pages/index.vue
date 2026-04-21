@@ -15,7 +15,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4">
+  <div class="min-h-dvh flex items-center justify-center p-4">
     <div class="text-center text-gray-400">
       <p v-if="loading">
         Loading…
