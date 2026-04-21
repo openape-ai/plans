@@ -19,6 +19,7 @@
     "@openape/nuxt-auth-sp": "^0.6.10",
     "drizzle-orm": "^0.44.7",
     "jose": "^5.9.6",
+    "marked": "^18.0.2",
     "nuxt": "^4.0.0",
     "tailwindcss": "^4.0.0",
     "ulid": "^2.3.0"
