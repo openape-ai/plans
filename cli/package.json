@@ -11,6 +11,18 @@
     "dist",
     "README.md"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openape-ai/plans.git",
+    "directory": "cli"
+  },
+  "homepage": "https://github.com/openape-ai/plans#readme",
+  "bugs": {
+    "url": "https://github.com/openape-ai/plans/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
