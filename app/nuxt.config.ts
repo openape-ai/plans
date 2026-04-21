@@ -13,6 +13,8 @@ export default defineNuxtConfig({
     tursoAuthToken: process.env.TURSO_AUTH_TOKEN || '',
     // Invite JWT
     inviteSecret: process.env.NUXT_INVITE_SECRET || 'dev-invite-secret-change-me-min-32-chars',
+    // CLI bearer token JWT (HS256)
+    cliTokenSecret: process.env.NUXT_CLI_TOKEN_SECRET || 'dev-cli-token-secret-change-me-min-32-chars!!',
     public: {
       siteName: 'OpenApe Plans',
     },

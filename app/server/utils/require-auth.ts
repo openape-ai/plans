@@ -1,6 +1,7 @@
 import type { H3Event } from 'h3'
 import { createError, getHeader, useSession } from 'h3'
 import { useRuntimeConfig } from 'nitropack/runtime'
+import { verifyCliToken } from './cli-token'
 
 export interface Caller {
   email: string
@@ -43,11 +44,14 @@ export async function requireCaller(event: H3Event): Promise<Caller> {
     // session unusable, fall through to bearer
   }
 
-  // 2. Try bearer token
+  // 2. Try bearer token — first as a locally-issued CLI token (fast, offline
+  //    verify), then fall back to IdP-issued agent tokens (network round-trip).
   const authHeader = getHeader(event, 'authorization')
   if (authHeader?.startsWith('Bearer ')) {
     const token = authHeader.slice(7).trim()
     if (token) {
+      const cli = await verifyCliToken(token)
+      if (cli) return { email: cli.email, act: cli.act }
       const verified = await verifyAgentToken(token)
       if (verified) return verified
     }
