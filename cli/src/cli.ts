@@ -13,12 +13,13 @@ import {
   rmCommand,
 } from './commands/plans.ts'
 import { docsCommand } from './commands/docs.ts'
+import { openCommand } from './commands/open.ts'
 import { error } from './output.ts'
 
 const main = defineCommand({
   meta: {
     name: 'ape-plans',
-    version: '0.1.0',
+    version: '0.2.0',
     description: 'CLI for plans.openape.ai — cross-device plan management for humans and AI agents.',
   },
   subCommands: {
@@ -33,6 +34,7 @@ const main = defineCommand({
     edit: editCommand,
     status: statusCommand,
     rm: rmCommand,
+    open: openCommand,
     docs: docsCommand,
   },
 })

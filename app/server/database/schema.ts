@@ -6,6 +6,7 @@ export const teams = sqliteTable('teams', {
   description: text('description'),
   createdBy: text('created_by').notNull(),
   createdAt: integer('created_at').notNull(),
+  archivedAt: integer('archived_at'),
 })
 
 export const teamMembers = sqliteTable('team_members', {

@@ -19,6 +19,8 @@ export interface EndpointState {
   email: string
   act?: 'human' | 'agent'
   tokenExpiresAt?: number
+  /** Default team ULID for this endpoint. `teams use <id>` sets it. */
+  activeTeamId?: string
 }
 
 export interface CliConfig {
@@ -95,6 +97,35 @@ export function clearActiveSession(endpointOverride?: unknown): void {
 
 export function configPath(): string {
   return CONFIG_FILE
+}
+
+/** Per-endpoint active team, set via `teams use <id>`. */
+export function getActiveTeamId(endpointOverride?: unknown): string | undefined {
+  return getActiveSession(endpointOverride)?.activeTeamId
+}
+
+export function setActiveTeamId(teamId: unknown, endpointOverride?: unknown): void {
+  const endpoint = resolveEndpoint(endpointOverride)
+  const config = loadConfig()
+  const state = config.endpoints[endpoint]
+  if (!state) return
+  if (typeof teamId === 'string' && teamId.length > 0) state.activeTeamId = teamId
+  else delete state.activeTeamId
+  saveConfig(config)
+}
+
+/**
+ * Resolve a team id for a command: explicit `--team` wins, then the stored
+ * active team, then throw a clear error pointing the user at `teams use`.
+ */
+export function resolveTeamId(explicit?: unknown, endpointOverride?: unknown): string {
+  if (typeof explicit === 'string' && explicit.length > 0) return explicit
+  const active = getActiveTeamId(endpointOverride)
+  if (active) return active
+  throw Object.assign(new Error('No team. Pass --team <id> or run `ape-plans teams use <id>` to set a default.'), {
+    status: 400,
+    title: 'No team',
+  })
 }
 
 export { DEFAULT_ENDPOINT, dirname }

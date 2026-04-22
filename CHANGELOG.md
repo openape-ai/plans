@@ -3,6 +3,40 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [CLI 0.2.0] — 2026-04-22
+
+Driven by real friction captured while drafting a 10 KB planning doc through the v0.1 CLI (friction log preserved under the "OpenApe" team on plans.openape.ai).
+
+### CLI
+
+- **Default team context.** `ape-plans teams use <id>` persists a per-endpoint
+  default. Subsequent `new`/`invite`/etc. omit `--team`. `teams --show` and
+  `--clear` manage it. The active team is marked with `*` in `teams` listings.
+- **Body patch editors** on `edit`:
+  - `--append-body` / `--prepend-body` — merge incoming text without a re-send
+  - `--replace-section "<heading>"` — replace the block under a Markdown
+    heading until the next same-or-shallower heading
+- **Team lifecycle:** `teams update <id> [--name] [--description]`,
+  `teams archive|unarchive <id>`, `teams rm <id> [--force]`. `teams` hides
+  archived by default; `--include-archived` flag reveals them.
+- **`--id-only`** on every create command — prints just the ULID for scripting
+  (`ID=$(ape-plans teams new X --id-only)`).
+- **`ape-plans open <plan-id>`** launches the web view in the default browser.
+- **Docs:** heredoc pattern (`--body-from-stdin <<'EOF' ... EOF`) promoted in
+  `docs agent`.
+
+### Webapp
+
+- `POST /api/teams` now returns the same list-shape (`member_count`,
+  `plan_count`, `updated_at`) as `GET /api/teams`.
+- `PATCH /api/teams/:id` — rename/edit description (owner-only).
+- `POST /api/teams/:id/archive` + `POST /api/teams/:id/unarchive`.
+- `DELETE /api/teams/:id` — refuses with 409 when plans exist unless
+  `?force=true`, which cascade-soft-deletes the plans.
+- `GET /api/teams?include_archived=1` — otherwise archived teams are hidden.
+- `teams.archived_at` column added (idempotent in-place `ALTER TABLE`, so
+  existing v0.1 deploys upgrade with a simple service restart).
+
 ## [0.1.0] — 2026-04-22
 
 Initial public release.

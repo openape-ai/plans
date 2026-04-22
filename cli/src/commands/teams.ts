@@ -1,6 +1,7 @@
 import { defineCommand } from 'citty'
 import { apiCall } from '../api.ts'
 import { printJson, printLine } from '../output.ts'
+import { getActiveTeamId, setActiveTeamId } from '../config.ts'
 
 interface TeamListItem {
   id: string
@@ -88,6 +89,7 @@ export const teamsCommand = defineCommand({
   },
   args: {
     json: { type: 'boolean', description: 'JSON output.' },
+    'include-archived': { type: 'boolean', description: 'Include teams previously archived with `teams archive`.' },
     endpoint: { type: 'string', description: 'Override plans endpoint.' },
   },
   subCommands: {
@@ -126,10 +128,11 @@ export const teamsCommand = defineCommand({
         name: { type: 'positional', required: true, description: 'Team name (1–120 chars).' },
         description: { type: 'string', description: 'Optional description (≤500 chars).' },
         json: { type: 'boolean', description: 'JSON output.' },
+        'id-only': { type: 'boolean', description: 'Print only the new team id.' },
         endpoint: { type: 'string', description: 'Override plans endpoint.' },
       },
       async run({ args }) {
-        const result = await apiCall<{ id: string, name: string, description: string | null }>(
+        const result = await apiCall<TeamListItem>(
           'POST',
           '/api/teams',
           {
@@ -137,6 +140,7 @@ export const teamsCommand = defineCommand({
             body: { name: args.name, description: args.description },
           },
         )
+        if (args['id-only']) { printLine(result.id); return }
         if (args.json) { printJson(result); return }
         printLine(result.id)
       },
@@ -215,20 +219,128 @@ export const teamsCommand = defineCommand({
         printLine('revoked')
       },
     }),
+
+    use: defineCommand({
+      meta: {
+        name: 'use',
+        description: 'Set the default team so subsequent commands do not need --team.',
+      },
+      args: {
+        teamId: { type: 'positional', required: false, description: 'Team ULID. Omit with --show or --clear.' },
+        show: { type: 'boolean', description: 'Print the current default team id.' },
+        clear: { type: 'boolean', description: 'Unset the default team.' },
+        endpoint: { type: 'string', description: 'Override plans endpoint.' },
+      },
+      async run({ args }) {
+        if (args.show) {
+          const tid = getActiveTeamId(args.endpoint)
+          printLine(tid ?? '(no default team set)')
+          return
+        }
+        if (args.clear) {
+          setActiveTeamId(null, args.endpoint)
+          printLine('default team cleared')
+          return
+        }
+        if (!args.teamId) throw Object.assign(new Error('Pass a team id, --show, or --clear.'), { status: 400, title: 'Missing argument' })
+        // Validate membership before persisting — fails loudly instead of silently storing a bad id.
+        await apiCall('GET', `/api/teams/${args.teamId}`, { endpoint: args.endpoint })
+        setActiveTeamId(args.teamId, args.endpoint)
+        printLine(`default team set to ${args.teamId}`)
+      },
+    }),
+
+    update: defineCommand({
+      meta: {
+        name: 'update',
+        description: 'Rename a team or change its description (owner only).',
+      },
+      args: {
+        teamId: { type: 'positional', required: true, description: 'Team ULID.' },
+        name: { type: 'string', description: 'New name (1–120 chars).' },
+        description: { type: 'string', description: 'New description (≤500 chars). Pass empty string to clear.' },
+        json: { type: 'boolean', description: 'JSON output.' },
+        endpoint: { type: 'string', description: 'Override plans endpoint.' },
+      },
+      async run({ args }) {
+        const body: Record<string, string | null> = {}
+        if (typeof args.name === 'string') body.name = args.name
+        if (typeof args.description === 'string') body.description = args.description.length === 0 ? null : args.description
+        if (Object.keys(body).length === 0) {
+          throw Object.assign(new Error('Pass --name or --description.'), { status: 400, title: 'No changes' })
+        }
+        const result = await apiCall<TeamListItem>('PATCH', `/api/teams/${args.teamId}`, {
+          endpoint: args.endpoint,
+          body,
+        })
+        if (args.json) { printJson(result); return }
+        printLine(`${result.id}  ${result.name}${result.description ? `  — ${result.description}` : ''}`)
+      },
+    }),
+
+    archive: defineCommand({
+      meta: { name: 'archive', description: 'Archive a team — hides from default listings (owner only).' },
+      args: {
+        teamId: { type: 'positional', required: true, description: 'Team ULID.' },
+        endpoint: { type: 'string', description: 'Override plans endpoint.' },
+      },
+      async run({ args }) {
+        await apiCall('POST', `/api/teams/${args.teamId}/archive`, { endpoint: args.endpoint })
+        printLine(`archived ${args.teamId}`)
+      },
+    }),
+
+    unarchive: defineCommand({
+      meta: { name: 'unarchive', description: 'Unarchive a previously archived team.' },
+      args: {
+        teamId: { type: 'positional', required: true, description: 'Team ULID.' },
+        endpoint: { type: 'string', description: 'Override plans endpoint.' },
+      },
+      async run({ args }) {
+        await apiCall('POST', `/api/teams/${args.teamId}/unarchive`, { endpoint: args.endpoint })
+        printLine(`unarchived ${args.teamId}`)
+      },
+    }),
+
+    rm: defineCommand({
+      meta: {
+        name: 'rm',
+        description: 'Permanently delete a team (owner only). Refuses if plans exist unless --force.',
+      },
+      args: {
+        teamId: { type: 'positional', required: true, description: 'Team ULID.' },
+        force: { type: 'boolean', description: 'Cascade-soft-delete any remaining plans. Destructive.' },
+        endpoint: { type: 'string', description: 'Override plans endpoint.' },
+      },
+      async run({ args }) {
+        await apiCall('DELETE', `/api/teams/${args.teamId}`, {
+          endpoint: args.endpoint,
+          query: args.force ? { force: 'true' } : undefined,
+        })
+        printLine(`deleted team ${args.teamId}`)
+        // Clear the active-team pointer if we just nuked the pointed-to team
+        if (getActiveTeamId(args.endpoint) === args.teamId) setActiveTeamId(null, args.endpoint)
+      },
+    }),
   },
   async run({ args, rawArgs }) {
     // citty 0.1.6 runs the parent `run` even after a subcommand matched. Guard
     // so `ape-plans teams <subcmd> ...` does not also spam the team list.
-    const subCmds = ['show', 'new', 'invite', 'invites', 'revoke-invite']
+    const subCmds = ['show', 'new', 'invite', 'invites', 'revoke-invite', 'use', 'update', 'archive', 'unarchive', 'rm']
     const firstPositional = rawArgs.find(a => !a.startsWith('-'))
     if (firstPositional && subCmds.includes(firstPositional)) return
 
-    const teams = await apiCall<TeamListItem[]>('GET', '/api/teams', { endpoint: args.endpoint })
+    const teams = await apiCall<TeamListItem[]>('GET', '/api/teams', {
+      endpoint: args.endpoint,
+      query: args['include-archived'] ? { include_archived: 'true' } : undefined,
+    })
     if (args.json) { printJson(teams); return }
     if (teams.length === 0) { printLine('(no teams — create one with `ape-plans teams new "<name>"`)'); return }
+    const activeTid = getActiveTeamId(args.endpoint)
     for (const t of teams) {
+      const marker = t.id === activeTid ? '* ' : '  '
       printLine(
-        `${t.id}  ${t.name.padEnd(30)}  role ${t.role.padEnd(7)} members ${t.member_count}  plans ${t.plan_count}`,
+        `${marker}${t.id}  ${t.name.padEnd(30)}  role ${t.role.padEnd(7)} members ${t.member_count}  plans ${t.plan_count}`,
       )
     }
   },

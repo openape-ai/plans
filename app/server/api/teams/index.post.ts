@@ -36,5 +36,15 @@ export default defineEventHandler(async (event) => {
   })
 
   setResponseStatus(event, 201)
-  return { id, name, description, role: 'owner', created_at: now }
+  return {
+    id,
+    name,
+    description,
+    role: 'owner' as const,
+    member_count: 1,
+    plan_count: 0,
+    archived_at: null,
+    created_at: now,
+    updated_at: now,
+  }
 })

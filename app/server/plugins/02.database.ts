@@ -12,8 +12,13 @@ export default defineNitroPlugin(async () => {
       name TEXT NOT NULL,
       description TEXT,
       created_by TEXT NOT NULL,
-      created_at INTEGER NOT NULL
+      created_at INTEGER NOT NULL,
+      archived_at INTEGER
     )`)
+    // In-place add for pre-existing rows created under v0.1. Ignore if the
+    // column is already there — sqlite has no IF NOT EXISTS for columns.
+    try { await db.run(sql`ALTER TABLE teams ADD COLUMN archived_at INTEGER`) }
+    catch { /* column already present */ }
 
     await db.run(sql`CREATE TABLE IF NOT EXISTS team_members (
       team_id TEXT NOT NULL,

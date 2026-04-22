@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
 import { apiCall, createApiError } from '../api.ts'
+import { resolveTeamId } from '../config.ts'
 import { printJson, printLine } from '../output.ts'
 
 type PlanStatus = 'draft' | 'active' | 'done' | 'archived'
@@ -135,12 +136,13 @@ export const newCommand = defineCommand({
     description: 'Create a plan in a team.',
   },
   args: {
-    team: { type: 'string', required: true, description: 'Team ULID (required).' },
+    team: { type: 'string', required: false, description: 'Team ULID. Falls back to the team set via `ape-plans teams use <id>`.' },
     title: { type: 'string', required: true, description: 'Plan title (1–200 chars).' },
     status: { type: 'string', description: 'draft|active|done|archived (default draft).' },
     'body-from-stdin': { type: 'boolean', description: 'Read body from stdin.' },
     'body-from-file': { type: 'string', description: 'Read body from a file.' },
     json: { type: 'boolean', description: 'JSON output.' },
+    'id-only': { type: 'boolean', description: 'Print only the new plan id (one line, nothing else).' },
     endpoint: { type: 'string', description: 'Override plans endpoint.' },
   },
   async run({ args }) {
@@ -160,10 +162,12 @@ export const newCommand = defineCommand({
       bodyMd = editInEditor('', `# ${args.title}\n\n`)
     }
 
-    const plan = await apiCall<PlanFull>('POST', `/api/teams/${args.team}/plans`, {
+    const teamId = resolveTeamId(args.team, args.endpoint)
+    const plan = await apiCall<PlanFull>('POST', `/api/teams/${teamId}/plans`, {
       endpoint: args.endpoint,
       body: { title: args.title, body_md: bodyMd, status },
     })
+    if (args['id-only']) { printLine(plan.id); return }
     if (args.json) { printJson(plan); return }
     printLine(plan.id)
   },
@@ -191,6 +195,9 @@ export const editCommand = defineCommand({
     status: { type: 'string', description: 'Change the status.' },
     'body-from-stdin': { type: 'boolean', description: 'Read new body from stdin.' },
     'body-from-file': { type: 'string', description: 'Read new body from a file.' },
+    'append-body': { type: 'boolean', description: 'Append the new body content to the existing body instead of replacing.' },
+    'prepend-body': { type: 'boolean', description: 'Prepend the new body content before the existing body.' },
+    'replace-section': { type: 'string', description: 'Replace the Markdown section whose heading matches exactly (e.g. "## Progress") until the next same-or-shallower heading.' },
     json: { type: 'boolean', description: 'JSON output.' },
     endpoint: { type: 'string', description: 'Override plans endpoint.' },
   },
@@ -206,14 +213,36 @@ export const editCommand = defineCommand({
       patch.status = args.status
     }
 
-    if (args['body-from-file']) {
-      patch.body_md = readFileSync(args['body-from-file'], 'utf-8')
+    // Gather incoming body content once (stdin / file / editor).
+    let incoming: string | undefined
+    if (args['body-from-file']) incoming = readFileSync(args['body-from-file'], 'utf-8')
+    else if (args['body-from-stdin']) incoming = await readStdin()
+    else if (process.stdin.isTTY && !args['append-body'] && !args['prepend-body'] && !args['replace-section']) {
+      // Only open $EDITOR when there's no patch-mode — otherwise an empty editor clobbers the mode.
+      incoming = editInEditor(current.body_md, `# ${current.title}\n\n`)
     }
-    else if (args['body-from-stdin']) {
-      patch.body_md = await readStdin()
+
+    const bodyFlags = ['append-body', 'prepend-body', 'replace-section'].filter(f => args[f as keyof typeof args])
+    if (bodyFlags.length > 1) {
+      throw createApiError(400, 'Pass at most one of --append-body, --prepend-body, --replace-section')
     }
-    else if (process.stdin.isTTY) {
-      patch.body_md = editInEditor(current.body_md, `# ${current.title}\n\n`)
+
+    if (args['append-body']) {
+      if (typeof incoming !== 'string') throw createApiError(400, '--append-body requires --body-from-stdin or --body-from-file')
+      const sep = current.body_md.endsWith('\n') ? '' : '\n'
+      patch.body_md = `${current.body_md}${sep}${incoming}`
+    }
+    else if (args['prepend-body']) {
+      if (typeof incoming !== 'string') throw createApiError(400, '--prepend-body requires --body-from-stdin or --body-from-file')
+      const sep = incoming.endsWith('\n') ? '' : '\n'
+      patch.body_md = `${incoming}${sep}${current.body_md}`
+    }
+    else if (typeof args['replace-section'] === 'string') {
+      if (typeof incoming !== 'string') throw createApiError(400, '--replace-section requires --body-from-stdin or --body-from-file')
+      patch.body_md = replaceMarkdownSection(current.body_md, args['replace-section'], incoming)
+    }
+    else if (incoming !== undefined) {
+      patch.body_md = incoming
     }
 
     if (Object.keys(patch).length === 0) {
@@ -279,6 +308,34 @@ export const rmCommand = defineCommand({
     printLine(`deleted ${args.planId}`)
   },
 })
+
+/**
+ * Replace the content under a Markdown heading until the next heading at the
+ * same or shallower depth. The heading line itself is preserved; everything
+ * between it and the next boundary is swapped for `replacement`. Matches the
+ * first occurrence only. Heading is matched verbatim (must include the '#'s).
+ */
+function replaceMarkdownSection(body: string, heading: string, replacement: string): string {
+  const lines = body.split('\n')
+  const headingIdx = lines.findIndex(l => l === heading)
+  if (headingIdx === -1) {
+    throw createApiError(404, `Heading not found: ${heading}`, 'The heading must match an existing line exactly (e.g. "## Progress").')
+  }
+  const depth = (heading.match(/^#+/) ?? [''])[0].length
+  if (depth === 0) {
+    throw createApiError(400, `--replace-section target must be a Markdown heading starting with #`)
+  }
+  let endIdx = lines.length
+  for (let i = headingIdx + 1; i < lines.length; i++) {
+    const m = lines[i]!.match(/^(#+)\s/)
+    if (m && m[1]!.length <= depth) { endIdx = i; break }
+  }
+  const before = lines.slice(0, headingIdx + 1).join('\n')
+  const after = lines.slice(endIdx).join('\n')
+  const middle = replacement.endsWith('\n') ? replacement : `${replacement}\n`
+  const tail = endIdx === lines.length ? '' : `\n${after}`
+  return `${before}\n${middle}${tail}`
+}
 
 function readStdin(): Promise<string> {
   return new Promise((resolve, reject) => {

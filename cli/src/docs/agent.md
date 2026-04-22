@@ -49,6 +49,17 @@ ape-plans new --team 01H... --title "My new plan"
 echo '# Plan body' | ape-plans new --team 01H... --title "Scripted" --body-from-stdin
 ape-plans new --team 01H... --title "From file" --body-from-file plan.md
 
+# Multi-line inline body via heredoc — no tempfile needed:
+ape-plans new --team 01H... --title "Inline" --body-from-stdin <<'EOF'
+# Plan
+- step one
+- step two
+EOF
+
+# Default team: set it once, skip --team everywhere after:
+ape-plans teams use 01H...
+ape-plans new --title "No --team needed" --body-from-stdin <<<"# body"
+
 # Update. Same body input flags; --title and --status are patch-style.
 ape-plans edit 01H... --body-from-file updated.md
 ape-plans edit 01H... --status done
