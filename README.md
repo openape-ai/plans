@@ -70,10 +70,25 @@ For production: see [`docs/deploy.md`](./docs/deploy.md) — host-agnostic
 
 | Topic | File |
 |-------|------|
+| **Claude Code skill** (recommended for agents) | [`skills/ape-plans/SKILL.md`](./skills/ape-plans/SKILL.md) |
 | Agent workflows | [`docs/agent.md`](./docs/agent.md) |
 | Operator deploy guide | [`docs/deploy.md`](./docs/deploy.md) |
 | CLI reference (also inline: `ape-plans docs cli`) | [`cli/src/docs/cli.md`](./cli/src/docs/cli.md) |
 | Claude Code onboarding snippet | [`docs/claude-example.md`](./docs/claude-example.md) |
+
+### Claude Code skill
+
+Install the skill so fresh Claude sessions auto-discover `ape-plans`:
+
+```bash
+# clone once
+git clone https://github.com/openape-ai/plans ~/Dev/openape-plans
+# symlink into Claude's skills directory
+mkdir -p ~/.claude/skills
+ln -s ~/Dev/openape-plans/skills/ape-plans ~/.claude/skills/ape-plans
+```
+
+Next session, Claude picks it up automatically when the task involves planning — cross-device, multi-agent, OR just non-trivial local work.
 
 ## Project layout
 

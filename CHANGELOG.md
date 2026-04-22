@@ -3,6 +3,18 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [CLI 0.2.1] — 2026-04-22
+
+- **Claude Code skill** bundled in `skills/ape-plans/SKILL.md`. Positions
+  `ape-plans` as the default planning surface for any non-trivial work
+  (local AND cross-device), spells out living-document discipline
+  (progress updates, discoveries, decision log), and a writing style that
+  stays self-contained enough for newcomers to execute without prior
+  context. Install: symlink into `~/.claude/skills/ape-plans`.
+- **Top-level `ape-plans --help`** now carries a 3-line orientation
+  (first-time setup + pointers to docs + the skill) instead of a single
+  flat description.
+
 ## [CLI 0.2.0] — 2026-04-22
 
 Driven by real friction captured while drafting a 10 KB planning doc through the v0.1 CLI (friction log preserved under the "OpenApe" team on plans.openape.ai).

@@ -19,8 +19,14 @@ import { error } from './output.ts'
 const main = defineCommand({
   meta: {
     name: 'ape-plans',
-    version: '0.2.0',
-    description: 'CLI for plans.openape.ai — cross-device plan management for humans and AI agents.',
+    version: '0.2.1',
+    description: [
+      'Living plans for humans and AI agents — persisted across sessions, devices, and hand-offs.',
+      '',
+      'First time? `ape-plans login <email>` (paste token from {endpoint}/cli-login).',
+      'Lost? `ape-plans docs agent` for the agent reference, or see the Claude skill',
+      'at https://github.com/openape-ai/plans/blob/main/skills/ape-plans/SKILL.md.',
+    ].join('\n'),
   },
   subCommands: {
     login: loginCommand,
