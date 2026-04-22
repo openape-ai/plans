@@ -113,7 +113,7 @@ function formatDate(ts: number): string {
       <UCard v-else>
         <div v-if="!token" class="space-y-4">
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Signed in as <span class="font-mono">{{ user.email ?? user.sub }}</span>.
+            Signed in as <span class="font-mono">{{ user.sub }}</span>.
             The token below is valid for 30 days. Paste it into the CLI when prompted.
           </p>
           <UAlert v-if="issueError" color="error" :title="issueError" @close="issueError = ''" />
@@ -141,7 +141,7 @@ function formatDate(ts: number): string {
             <p class="mb-1">
               Back in your terminal:
             </p>
-            <pre class="p-2 rounded bg-gray-100 dark:bg-gray-800">ape-plans login {{ user.email ?? user.sub }}</pre>
+            <pre class="p-2 rounded bg-gray-100 dark:bg-gray-800">ape-plans login {{ user.sub }}</pre>
             <p class="mt-1">
               …then paste the token when asked.
             </p>

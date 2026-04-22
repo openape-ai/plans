@@ -28,7 +28,7 @@ const error = ref('')
 const canEdit = computed(() => plan.value?.caller_role === 'owner' || plan.value?.caller_role === 'editor')
 const canDelete = computed(() => {
   if (!plan.value || !user.value) return false
-  const callerEmail = user.value.email ?? user.value.sub
+  const callerEmail = user.value.sub
   return plan.value.owner_email === callerEmail || plan.value.caller_role === 'owner'
 })
 const rendered = computed(() => plan.value ? renderMarkdown(plan.value.body_md) : '')

@@ -62,7 +62,7 @@ function formatRelative(ts: number): string {
             Teams
           </h1>
           <p v-if="user" class="text-sm text-gray-500">
-            {{ user.email }}
+            {{ user.sub }}
           </p>
         </div>
         <div class="flex gap-2">

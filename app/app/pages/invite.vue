@@ -137,7 +137,7 @@ function formatDate(ts: number): string {
 
           <div v-if="user" class="pt-3">
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Signed in as <span class="font-mono">{{ user.email ?? user.sub }}</span>
+              Signed in as <span class="font-mono">{{ user.sub }}</span>
             </p>
             <UButton
               color="primary"

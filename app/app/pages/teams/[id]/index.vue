@@ -54,7 +54,7 @@ const copied = ref(false)
 
 const callerRole = computed<'owner' | 'editor' | 'viewer' | null>(() => {
   if (!detail.value || !user.value) return null
-  return detail.value.members.find(m => m.email === user.value?.sub || m.email === user.value?.email)?.role ?? null
+  return detail.value.members.find(m => m.email === user.value?.sub)?.role ?? null
 })
 const canEdit = computed(() => callerRole.value === 'owner' || callerRole.value === 'editor')
 
@@ -342,7 +342,7 @@ function formatDate(ts: number): string {
                 {{ m.role }}
               </UBadge>
               <UButton
-                v-if="callerRole === 'owner' && m.email !== user?.email && m.email !== user?.sub"
+                v-if="callerRole === 'owner' && m.email !== user?.sub"
                 color="error"
                 variant="ghost"
                 icon="i-lucide-x"
