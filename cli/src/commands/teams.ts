@@ -216,7 +216,13 @@ export const teamsCommand = defineCommand({
       },
     }),
   },
-  async run({ args }) {
+  async run({ args, rawArgs }) {
+    // citty 0.1.6 runs the parent `run` even after a subcommand matched. Guard
+    // so `ape-plans teams <subcmd> ...` does not also spam the team list.
+    const subCmds = ['show', 'new', 'invite', 'invites', 'revoke-invite']
+    const firstPositional = rawArgs.find(a => !a.startsWith('-'))
+    if (firstPositional && subCmds.includes(firstPositional)) return
+
     const teams = await apiCall<TeamListItem[]>('GET', '/api/teams', { endpoint: args.endpoint })
     if (args.json) { printJson(teams); return }
     if (teams.length === 0) { printLine('(no teams — create one with `ape-plans teams new "<name>"`)'); return }
