@@ -24,12 +24,12 @@ export const whoamiCommand = defineCommand({
   },
   async run({ args }) {
     const endpoint = resolveEndpoint(args.endpoint)
-    const me = await apiCall<{ sub?: string, email?: string, act?: 'human' | 'agent' }>(
+    const me = await apiCall<{ email: string, act: 'human' | 'agent' }>(
       'GET',
-      '/api/me',
+      '/api/cli/me',
       { endpoint },
     )
-    const email = me.email ?? me.sub ?? 'unknown'
+    const email = me.email ?? 'unknown'
     const act = me.act ?? 'human'
 
     if (args.json) {

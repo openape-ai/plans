@@ -71,7 +71,7 @@ export const loginCommand = defineCommand({
 
 async function verifyToken(endpoint: string, token: string): Promise<{ sub?: string, email?: string, act?: string, exp?: number }> {
   try {
-    const res = await fetch(`${endpoint}/api/me`, {
+    const res = await fetch(`${endpoint}/api/cli/me`, {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
     })
     if (!res.ok) {
