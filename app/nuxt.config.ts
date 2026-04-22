@@ -8,13 +8,15 @@ export default defineNuxtConfig({
   css: ['~/assets/main.css'],
 
   runtimeConfig: {
-    // DB
-    tursoUrl: process.env.TURSO_URL || 'file:./dev.db',
-    tursoAuthToken: process.env.TURSO_AUTH_TOKEN || '',
-    // Invite JWT
-    inviteSecret: process.env.NUXT_INVITE_SECRET || 'dev-invite-secret-change-me-min-32-chars',
-    // CLI bearer token JWT (HS256)
-    cliTokenSecret: process.env.NUXT_CLI_TOKEN_SECRET || 'dev-cli-token-secret-change-me-min-32-chars!!',
+    // DB — overridden at runtime by NUXT_TURSO_URL. Defaults to a local dev
+    // file so `pnpm dev` works without any env setup. Production MUST set
+    // NUXT_TURSO_URL (path under shared/ so it survives deploy rotation).
+    tursoUrl: 'file:./dev.db',
+    tursoAuthToken: '',
+    // Invite JWT — runtime-overridden by NUXT_INVITE_SECRET.
+    inviteSecret: 'dev-invite-secret-change-me-min-32-chars',
+    // CLI bearer token JWT (HS256) — runtime-overridden by NUXT_CLI_TOKEN_SECRET.
+    cliTokenSecret: 'dev-cli-token-secret-change-me-min-32-chars!!',
     public: {
       siteName: 'OpenApe Plans',
     },

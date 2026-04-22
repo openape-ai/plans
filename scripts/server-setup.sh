@@ -53,8 +53,12 @@ PORT=${DEPLOY_PORT}
 HOST=127.0.0.1
 
 # SQLite file (libsql). Persistent across deploys.
-TURSO_URL=file:$BASE/shared/data/plans.db
-TURSO_AUTH_TOKEN=
+# The NUXT_ prefix is required — Nitro only maps runtimeConfig overrides
+# from NUXT_-prefixed env vars. Plain TURSO_URL is silently ignored and
+# the app falls back to the bundled default (file:./dev.db inside the
+# release dir), which would nuke data on every deploy.
+NUXT_TURSO_URL=file:$BASE/shared/data/plans.db
+NUXT_TURSO_AUTH_TOKEN=
 
 # Secrets (rotate by changing here and restarting the service)
 NUXT_SESSION_SECRET=replace-me-at-least-32-characters-long-xxxxxxxxxxxxx
