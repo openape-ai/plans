@@ -14,7 +14,7 @@ ape-plans login patrick@example.com
 `ape-plans login` prints a URL to open in a browser. The user signs in via
 DDISA at their identity provider, clicks "Generate CLI token" on the plans
 page, copies the token, and pastes it into the CLI. The token is stored at
-`~/.openape/plans.json` (chmod 600) and is valid for 30 days.
+`~/.openape/auth-plans.json` (chmod 600) and is valid for 30 days.
 
 ## Discover teams and plans
 

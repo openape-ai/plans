@@ -3,6 +3,13 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [CLI 0.3.0] — 2026-04-24
+
+### Changes
+
+- **Token file renamed** from `~/.openape/plans.json` to `~/.openape/auth-plans.json`. The old name overloaded "plans" (CLI state vs. user content). Backwards-compatible: the CLI still reads the legacy path on first use if the new one is missing, then rewrites under the new name and removes the legacy file on the next save.
+- Docs + login comments updated to reference the new path.
+
 ## [CLI 0.2.1] — 2026-04-22
 
 - **Claude Code skill** bundled in `skills/ape-plans/SKILL.md`. Positions

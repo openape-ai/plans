@@ -39,5 +39,5 @@ ape-plans <command> [args] [flags]
 
 ## Config location
 
-`~/.openape/plans.json` (chmod 600). Contains per-endpoint tokens. Remove it
+`~/.openape/auth-plans.json` (chmod 600). Contains per-endpoint tokens. Remove it
 to fully reset.

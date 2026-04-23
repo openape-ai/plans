@@ -19,7 +19,7 @@ import { info, printLine } from '../output.ts'
  *   Token: eyJhbGciOi…
  *   Logged in as patrick@example.com (endpoint: https://plans.openape.ai)
  *
- * The token is stored at ~/.openape/plans.json (chmod 600). Tokens are valid
+ * The token is stored at ~/.openape/auth-plans.json (chmod 600). Tokens are valid
  * for 30 days; run `ape-plans login` again to refresh.
  */
 export const loginCommand = defineCommand({

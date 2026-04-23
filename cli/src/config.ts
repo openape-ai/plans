@@ -3,12 +3,18 @@ import { dirname, join } from 'node:path'
 import { homedir } from 'node:os'
 
 /**
- * CLI state lives at `~/.openape/plans.json` (chmod 600). Multiple endpoints
- * (e.g. local dev vs prod) can coexist under `endpoints["<url>"]`; the
- * `activeEndpoint` key selects the default.
+ * CLI state lives at `~/.openape/auth-plans.json` (chmod 600). Multiple
+ * endpoints (e.g. local dev vs prod) can coexist under `endpoints["<url>"]`;
+ * the `activeEndpoint` key selects the default.
  *
  * Override endpoint per invocation via `--endpoint <url>`. Override the
  * default at startup via `APE_PLANS_ENDPOINT` env var.
+ *
+ * **Migration note:** v0.2.x stored this at `~/.openape/plans.json`. The
+ * name overloaded "plans" (state vs. content). On first load we still read
+ * the old path as a fallback; any `save` writes the new name. Users can
+ * delete `~/.openape/plans.json` once they've logged in once on the new
+ * CLI version.
  */
 
 const DEFAULT_ENDPOINT = process.env.APE_PLANS_ENDPOINT ?? 'https://plans.openape.ai'
@@ -29,18 +35,22 @@ export interface CliConfig {
 }
 
 const CONFIG_DIR = join(homedir(), '.openape')
-const CONFIG_FILE = join(CONFIG_DIR, 'plans.json')
+const CONFIG_FILE = join(CONFIG_DIR, 'auth-plans.json')
+const LEGACY_CONFIG_FILE = join(CONFIG_DIR, 'plans.json')
 
 function ensureConfigDir(): void {
   if (!existsSync(CONFIG_DIR)) mkdirSync(CONFIG_DIR, { recursive: true, mode: 0o700 })
 }
 
 export function loadConfig(): CliConfig {
-  if (!existsSync(CONFIG_FILE)) {
+  const path = existsSync(CONFIG_FILE)
+    ? CONFIG_FILE
+    : (existsSync(LEGACY_CONFIG_FILE) ? LEGACY_CONFIG_FILE : null)
+  if (!path) {
     return { activeEndpoint: DEFAULT_ENDPOINT, endpoints: {} }
   }
   try {
-    const raw = readFileSync(CONFIG_FILE, 'utf-8')
+    const raw = readFileSync(path, 'utf-8')
     const parsed = JSON.parse(raw) as Partial<CliConfig>
     return {
       activeEndpoint: parsed.activeEndpoint ?? DEFAULT_ENDPOINT,
@@ -56,6 +66,10 @@ export function saveConfig(config: CliConfig): void {
   ensureConfigDir()
   writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), { mode: 0o600 })
   try { chmodSync(CONFIG_FILE, 0o600) } catch { /* best effort */ }
+  // Once we've written the new-name file, clean up the legacy one.
+  if (existsSync(LEGACY_CONFIG_FILE)) {
+    try { unlinkSync(LEGACY_CONFIG_FILE) } catch { /* best effort */ }
+  }
 }
 
 export function resolveEndpoint(override?: unknown): string {
@@ -84,8 +98,10 @@ export function clearActiveSession(endpointOverride?: unknown): void {
   const config = loadConfig()
   delete config.endpoints[endpoint]
   if (Object.keys(config.endpoints).length === 0) {
-    if (existsSync(CONFIG_FILE)) {
-      try { unlinkSync(CONFIG_FILE) } catch { /* best effort */ }
+    for (const f of [CONFIG_FILE, LEGACY_CONFIG_FILE]) {
+      if (existsSync(f)) {
+        try { unlinkSync(f) } catch { /* best effort */ }
+      }
     }
     return
   }
@@ -93,6 +109,11 @@ export function clearActiveSession(endpointOverride?: unknown): void {
     config.activeEndpoint = Object.keys(config.endpoints)[0] ?? DEFAULT_ENDPOINT
   }
   saveConfig(config)
+  // Prune the legacy file once we've migrated to the new name so we don't
+  // end up with stale tokens sitting around.
+  if (existsSync(LEGACY_CONFIG_FILE) && existsSync(CONFIG_FILE)) {
+    try { unlinkSync(LEGACY_CONFIG_FILE) } catch { /* best effort */ }
+  }
 }
 
 export function configPath(): string {

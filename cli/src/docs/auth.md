@@ -11,7 +11,7 @@
 
 The token is an HS256 JWT signed by plans.openape.ai. It carries `sub`, `email`,
 and `act` (human vs agent). Valid for 30 days by default. Stored at
-`~/.openape/plans.json` with mode 0600.
+`~/.openape/auth-plans.json` with mode 0600.
 
 ## Why paste-based, not OAuth device flow?
 
