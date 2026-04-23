@@ -42,6 +42,21 @@ const invites = ref<InviteSummary[]>([])
 const invitesLoading = ref(false)
 const invitesError = ref('')
 const showInvites = ref(false)
+const showHistory = ref(false)
+
+const STATUS_ORDER: Record<TeamPlan['status'], number> = { active: 0, draft: 1, done: 2, archived: 3 }
+function sortByStatusThenUpdated(a: TeamPlan, b: TeamPlan): number {
+  const s = STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
+  return s !== 0 ? s : b.updated_at - a.updated_at
+}
+const currentPlans = computed<TeamPlan[]>(() => {
+  if (!detail.value) return []
+  return detail.value.plans.filter(p => p.status === 'active' || p.status === 'draft').sort(sortByStatusThenUpdated)
+})
+const historyPlans = computed<TeamPlan[]>(() => {
+  if (!detail.value) return []
+  return detail.value.plans.filter(p => p.status === 'done' || p.status === 'archived').sort(sortByStatusThenUpdated)
+})
 
 const showInviteModal = ref(false)
 const inviteMaxUses = ref(5)
@@ -236,9 +251,9 @@ function formatDate(ts: number): string {
               New plan
             </UButton>
           </div>
-          <div v-if="detail.plans.length === 0" class="text-center py-8 text-gray-500 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+          <div v-if="currentPlans.length === 0" class="text-center py-8 text-gray-500 border border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
             <p class="mb-3">
-              No plans yet.
+              {{ historyPlans.length > 0 ? 'No active plans. See history below.' : 'No plans yet.' }}
             </p>
             <UButton
               v-if="canEdit"
@@ -247,12 +262,12 @@ function formatDate(ts: number): string {
               icon="i-lucide-plus"
               size="sm"
             >
-              Create first plan
+              {{ historyPlans.length > 0 ? 'New plan' : 'Create first plan' }}
             </UButton>
           </div>
           <div v-else class="grid grid-cols-1 gap-2">
             <NuxtLink
-              v-for="p in detail.plans"
+              v-for="p in currentPlans"
               :key="p.id"
               :to="`/teams/${teamId}/plans/${p.id}`"
               class="block p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-sm transition"
@@ -350,6 +365,40 @@ function formatDate(ts: number): string {
                 @click="removeMember(m.email)"
               />
             </div>
+          </div>
+        </section>
+
+        <!-- History (done + archived) -->
+        <section v-if="historyPlans.length > 0" class="mt-8">
+          <button
+            type="button"
+            class="flex items-center gap-2 text-lg font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            @click="showHistory = !showHistory"
+          >
+            <UIcon :name="showHistory ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'" />
+            History ({{ historyPlans.length }})
+          </button>
+          <div v-if="showHistory" class="grid grid-cols-1 gap-2 mt-3">
+            <NuxtLink
+              v-for="p in historyPlans"
+              :key="p.id"
+              :to="`/teams/${teamId}/plans/${p.id}`"
+              class="block p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary hover:shadow-sm transition opacity-70 hover:opacity-100"
+            >
+              <div class="flex items-start gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="font-medium truncate">
+                    {{ p.title }}
+                  </div>
+                  <div class="text-xs text-gray-500 mt-0.5">
+                    {{ p.owner_email }} · updated {{ formatRelative(p.updated_at) }}
+                  </div>
+                </div>
+                <UBadge :color="statusColor(p.status)" variant="subtle" size="xs">
+                  {{ p.status }}
+                </UBadge>
+              </div>
+            </NuxtLink>
           </div>
         </section>
       </div>
