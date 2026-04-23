@@ -26,8 +26,8 @@ importers:
         specifier: ^0.11.0
         version: 0.11.0(h3@1.15.11)
       '@openape/nuxt-auth-sp':
-        specifier: ^0.6.10
-        version: 0.6.10(h3@1.15.11)(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@libsql/client@0.14.0)(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.32)(cac@6.7.14)(db0@0.3.4(@libsql/client@0.14.0)(drizzle-orm@0.44.7(@libsql/client@0.14.0)))(drizzle-orm@0.44.7(@libsql/client@0.14.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(rollup-plugin-visualizer@7.0.1(rollup@4.60.2))(rollup@4.60.2)(srvx@0.11.15)(terser@5.46.1)(typescript@5.9.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3))
+        specifier: ^0.7.0
+        version: 0.7.0(h3@1.15.11)(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@libsql/client@0.14.0)(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.32)(cac@6.7.14)(db0@0.3.4(@libsql/client@0.14.0)(drizzle-orm@0.44.7(@libsql/client@0.14.0)))(drizzle-orm@0.44.7(@libsql/client@0.14.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(rollup-plugin-visualizer@7.0.1(rollup@4.60.2))(rollup@4.60.2)(srvx@0.11.15)(terser@5.46.1)(typescript@5.9.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3))
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@libsql/client@0.14.0)
@@ -693,8 +693,8 @@ packages:
   '@nuxtjs/color-mode@3.5.2':
     resolution: {integrity: sha512-cC6RfgZh3guHBMLLjrBB2Uti5eUoGM9KyauOaYS9ETmxNWBMTvpgjvSiSJp1OFljIXPIqVTJ3xtJpSNZiO3ZaA==}
 
-  '@openape/auth@0.6.1':
-    resolution: {integrity: sha512-SeDlCRkSKwD5bZ+VTslInW6PgK81iMuel9VSM6rRcnLr4JUxN3hletz/yo4eWE3WImVZyC1GWPne8U9/IO8p4A==}
+  '@openape/auth@0.6.2':
+    resolution: {integrity: sha512-fQ/XHGXGQtxHFisNTm7d4kx3hNUpivnYHCImwRFRfKnNXaEsDNW4ydvQPk0tMngRSVtta0mKhQX/Js40tuVtzQ==}
     engines: {node: '>=22'}
     peerDependencies:
       h3: ^1.13.0
@@ -710,6 +710,10 @@ packages:
     resolution: {integrity: sha512-DsZYzbODfKid2L1WZvlqJYv/9Vtcn2Q47ouQ995gjBh85xk+Y747sZx09ah6o3U7Mh7FvO+1dHeaCC5bcH/f+w==}
     engines: {node: '>=22'}
 
+  '@openape/core@0.13.1':
+    resolution: {integrity: sha512-r1jgOSjjyA7Zfm316oa8hyfJtKFP0e2dwJGR/iBuD0G82kzlDzD/8W+uI7myrbe063uFBBRwbm2x6awGk2hsIQ==}
+    engines: {node: '>=22'}
+
   '@openape/grants@0.11.0':
     resolution: {integrity: sha512-d1LAXLtWvtKTOkouXNGNCWdnNHnlD3KGw9Z8uhXlssvidT3agh+hQR1iL/K5rvGes6CtKYzSLwUDbyAybFa7Fw==}
     engines: {node: '>=22'}
@@ -719,8 +723,8 @@ packages:
       h3:
         optional: true
 
-  '@openape/nuxt-auth-sp@0.6.10':
-    resolution: {integrity: sha512-yJqw3ER60YshqzV0x7p/jOHnfEZVX3d5ErLFj0y1bky2aADXuQE/R4L63yUTp/JOdI8wikq+DiopKKA8O3FaVw==}
+  '@openape/nuxt-auth-sp@0.7.0':
+    resolution: {integrity: sha512-BjwBbIRCzf9sPZgvfbA0V9kYpVe1wNRB5IJtLGmlZ8y/ap0dz93+cHYb9fi88y7zb1269xUJWSVmNN82EbuIwg==}
     engines: {node: '>=22'}
     peerDependencies:
       nuxt: ^4.0.0
@@ -5682,9 +5686,9 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@openape/auth@0.6.1(h3@1.15.11)':
+  '@openape/auth@0.6.2(h3@1.15.11)':
     dependencies:
-      '@openape/core': 0.13.0
+      '@openape/core': 0.13.1
       '@simplewebauthn/server': 11.0.0
       '@simplewebauthn/types': 11.0.0
       jose: 5.10.0
@@ -5701,6 +5705,10 @@ snapshots:
     dependencies:
       jose: 5.10.0
 
+  '@openape/core@0.13.1':
+    dependencies:
+      jose: 5.10.0
+
   '@openape/grants@0.11.0(h3@1.15.11)':
     dependencies:
       '@openape/core': 0.13.0
@@ -5708,11 +5716,11 @@ snapshots:
     optionalDependencies:
       h3: 1.15.11
 
-  '@openape/nuxt-auth-sp@0.6.10(h3@1.15.11)(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@libsql/client@0.14.0)(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.32)(cac@6.7.14)(db0@0.3.4(@libsql/client@0.14.0)(drizzle-orm@0.44.7(@libsql/client@0.14.0)))(drizzle-orm@0.44.7(@libsql/client@0.14.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(rollup-plugin-visualizer@7.0.1(rollup@4.60.2))(rollup@4.60.2)(srvx@0.11.15)(terser@5.46.1)(typescript@5.9.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3))':
+  '@openape/nuxt-auth-sp@0.7.0(h3@1.15.11)(magicast@0.5.2)(nuxt@4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@libsql/client@0.14.0)(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.32)(cac@6.7.14)(db0@0.3.4(@libsql/client@0.14.0)(drizzle-orm@0.44.7(@libsql/client@0.14.0)))(drizzle-orm@0.44.7(@libsql/client@0.14.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(rollup-plugin-visualizer@7.0.1(rollup@4.60.2))(rollup@4.60.2)(srvx@0.11.15)(terser@5.46.1)(typescript@5.9.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3))':
     dependencies:
       '@nuxt/kit': 3.21.2(magicast@0.5.2)
-      '@openape/auth': 0.6.1(h3@1.15.11)
-      '@openape/core': 0.13.0
+      '@openape/auth': 0.6.2(h3@1.15.11)
+      '@openape/core': 0.13.1
       defu: 6.1.7
       nuxt: 4.4.2(@babel/core@7.29.0)(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@libsql/client@0.14.0)(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.32)(cac@6.7.14)(db0@0.3.4(@libsql/client@0.14.0)(drizzle-orm@0.44.7(@libsql/client@0.14.0)))(drizzle-orm@0.44.7(@libsql/client@0.14.0))(ioredis@5.10.1)(lightningcss@1.32.0)(magicast@0.5.2)(rollup-plugin-visualizer@7.0.1(rollup@4.60.2))(rollup@4.60.2)(srvx@0.11.15)(terser@5.46.1)(typescript@5.9.3)(vite@7.3.2(@types/node@25.6.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(yaml@2.8.3)
     transitivePeerDependencies:

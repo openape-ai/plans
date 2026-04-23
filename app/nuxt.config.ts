@@ -25,7 +25,12 @@ export default defineNuxtConfig({
   openapeSp: {
     clientId: process.env.NUXT_OPENAPE_CLIENT_ID || 'plans.openape.ai',
     spName: 'OpenApe Plans',
-    sessionSecret: process.env.NUXT_SESSION_SECRET || 'dev-session-secret-at-least-32-characters-long',
+    // Canonical env: NUXT_OPENAPE_SP_SESSION_SECRET. NUXT_SESSION_SECRET is
+    // kept as a legacy fallback for existing prod .env files — remove after
+    // all deploys have been rotated.
+    sessionSecret: process.env.NUXT_OPENAPE_SP_SESSION_SECRET
+      || process.env.NUXT_SESSION_SECRET
+      || 'dev-session-secret-at-least-32-characters-long',
     fallbackIdpUrl: process.env.NUXT_FALLBACK_IDP_URL || 'https://id.openape.ai',
   },
 
