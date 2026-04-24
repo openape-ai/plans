@@ -22,6 +22,11 @@ export default defineNuxtConfig({
     },
   },
 
+  colorMode: {
+    preference: 'dark',
+    fallback: 'dark',
+  },
+
   openapeSp: {
     clientId: process.env.NUXT_OPENAPE_CLIENT_ID || 'plans.openape.ai',
     spName: 'OpenApe Plans',

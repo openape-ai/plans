@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [CLI 0.3.1] — 2026-04-24
+
+- **`login --token <value>`** — pass the CLI token directly instead of the interactive prompt. Useful for scripts, agents, and CI smoke tests. (Piped stdin and the interactive prompt still work — `--token` is just the third equivalent input path.)
+- **Better 401 error on login:** the verify step now points at the exact endpoint it hit and suggests regenerating the token at `{endpoint}/cli-login`, instead of only surfacing the bare server message. `createApiError` now folds `detail` into `Error.message` so citty's default printer shows the actionable hint for every failing `apiCall`, not just login.
+
+## [Webapp 0.3.0] — 2026-04-24
+
+- **Ape-y redesign.** Orange/zinc theme, dark-mode default, proxy-style hero landing page on `/` with tagline *"Plans that outlive the conversation."*. Login page switched to zinc-dark. Shared visual language with `tasks.openape.ai`. No product semantics changed — plans are still Markdown-first.
+
 ## [CLI 0.3.0] — 2026-04-24
 
 ### Changes

@@ -32,14 +32,14 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="min-h-dvh flex items-center justify-center p-4">
+  <div class="min-h-dvh flex items-center justify-center p-4 bg-zinc-950 text-zinc-100">
     <UCard class="w-full max-w-md">
       <template #header>
         <h1 class="text-2xl font-bold">
           OpenApe Plans
         </h1>
-        <p class="text-sm text-gray-500 mt-1">
-          Persistent plans across devices and agents.
+        <p class="text-sm text-zinc-400 mt-1">
+          Living plans for humans and agents.
         </p>
       </template>
 
@@ -70,7 +70,7 @@ async function onSubmit() {
       </form>
 
       <template #footer>
-        <p class="text-xs text-gray-500">
+        <p class="text-xs text-zinc-500">
           Login via DDISA: we look up your email domain and forward you to your identity provider.
         </p>
       </template>

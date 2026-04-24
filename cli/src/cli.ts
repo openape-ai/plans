@@ -19,7 +19,7 @@ import { error } from './output.ts'
 const main = defineCommand({
   meta: {
     name: 'ape-plans',
-    version: '0.2.1',
+    version: '0.3.1',
     description: [
       'Living plans for humans and AI agents — persisted across sessions, devices, and hand-offs.',
       '',
