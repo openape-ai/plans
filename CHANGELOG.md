@@ -3,6 +3,38 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com).
 
+## [CLI 1.0.0] — 2026-04-25
+
+### BREAKING — unified login via `apes`
+
+- **`ape-plans login` is gone.** Auth is now shared with every other OpenApe CLI (ape-tasks, upcoming ape-secrets / ape-seeds) via `@openape/cli-auth`. Run `apes login <email>` **once** on a device and `ape-plans` works from then on.
+- **`ape-plans login` is now a stub** that prints the migration hint and exits 1, to give a useful error to anyone with muscle memory.
+- **`ape-plans logout`** now clears the cached SP-token at `~/.config/apes/sp-tokens/plans.openape.ai.json`. Pass `--legacy` to also remove the pre-1.0 `~/.openape/auth-plans.json` file. The IdP session (`~/.config/apes/auth.json`) is owned by `apes` — use `apes logout` for that.
+- **No more per-CLI token files.** Pre-1.0 installs may still have `~/.openape/auth-plans.json` lying around — that file is no longer read; delete it via `ape-plans logout --legacy`.
+
+### How it works under the hood
+
+- New dependency: `@openape/cli-auth@^0.2.3`.
+- API calls now go through `getAuthorizedBearer` which:
+  1. Reads cached SP-token if still valid (60 s skew).
+  2. Otherwise refreshes the IdP token via OIDC and exchanges it at `${endpoint}/api/cli/exchange` for a 30-day SP-scoped token.
+- The exchange endpoint was added to plans.openape.ai in [PR #2](https://github.com/openape-ai/plans/pull/2). It verifies the IdP token via JWKS against `id.openape.ai` with `expectedAud='apes-cli'`.
+
+### Migration
+
+```bash
+# Old (still works on 0.x):
+ape-plans login patrick@example.com
+# New (1.0+):
+apes login patrick@example.com
+ape-plans teams       # works without further auth
+```
+
+If you have an `~/.openape/auth-plans.json` from before:
+```bash
+ape-plans logout --legacy
+```
+
 ## [CLI 0.3.1] — 2026-04-24
 
 - **`login --token <value>`** — pass the CLI token directly instead of the interactive prompt. Useful for scripts, agents, and CI smoke tests. (Piped stdin and the interactive prompt still work — `--token` is just the third equivalent input path.)
