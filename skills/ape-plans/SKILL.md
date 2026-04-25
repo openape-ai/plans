@@ -72,8 +72,10 @@ If you're an agent, use the existing Patrick-template style as reference — see
 
 ```
 # Install once
-npm i -g @openape/ape-plans
-ape-plans login you@example.com          # paste token from {endpoint}/cli-login
+npm i -g @openape/apes @openape/ape-plans
+
+# Login once per device (covers ape-plans, ape-tasks, all OpenApe CLIs)
+apes login you@example.com               # DDISA via id.openape.ai
 
 # Discover existing plans first — never start fresh if one might already exist
 ape-plans whoami --json
