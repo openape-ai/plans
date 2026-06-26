@@ -5,7 +5,7 @@
  * import from here (via the api/config/output shims) rather than reaching
  * into @openape/cli-auth directly.
  */
-import { createSpClient } from '@openape/cli-auth'
+import { createProofClient } from '@openape/proof-cli'
 import type { SpClientState } from '@openape/cli-auth'
 
 export interface PlansState extends SpClientState {
@@ -14,11 +14,11 @@ export interface PlansState extends SpClientState {
   activeTeamId?: string
 }
 
-export const plansClient = createSpClient<PlansState>({
-  defaultEndpoint: 'https://plans.openape.ai',
+export const plansClient = createProofClient<PlansState>({
+  endpoint: 'https://plans.openape.ai',
   envVar: 'APE_PLANS_ENDPOINT',
   configFile: 'auth-plans.json',
-  defaultAud: 'plans.openape.ai',
+  aud: 'plans.openape.ai',
 })
 
 export const {
